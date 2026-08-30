@@ -2,7 +2,7 @@ import type { Context } from "probot";
 import { buildPrBody } from "../pr-body.js";
 import { uploadReleaseAssets } from "../github/release.js";
 
-export async function handlePullRequestOpened(context: Context<"pull_request.opened">) {
+export async function handlePullRequest(context: Context<"pull_request.opened" | "pull_request.edited">) {
   const { pull_request: pr, repository } = context.payload;
 
   if (!repository) {
