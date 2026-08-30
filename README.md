@@ -1,147 +1,108 @@
----
-name: use-create-pr
-description: สร้าง PR แบบ fully-featured พร้อม template body, test cases accordion, annotated screenshots, และ staging preview links
-related:
-  - create-github-pr
-  - template-image-pr
-  - capture-terminal
-  - record-video-terminal
-  - run-check
-  - run-test
-  - open-github-pr
----
+> ![Status](https://img.shields.io/badge/status-in_development-orange)
 
-## Goal
+# use-create-pr
 
-สร้าง pull request สำหรับ feature ทีมี UX/UI เปลี่ยนแปลง โดย PR body มี template, test cases accordion, annotated screenshots (1 รูปต่อ 1 test case) และ staging preview links
+Create fully-featured pull requests with annotated screenshots, test-case accordions, and staging preview links.
 
-## Scope
+![GitHub release](https://img.shields.io/github/v/release/newkub/use-create-pr?color=10b981)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Issues](https://img.shields.io/github/issues/newkub/use-create-pr?color=ef4444)
 
-ใช้เมื่อ:
-
-- PR มีหลาย feature ทีต้องอธิบาย UX/UI
-- ต้องการให้ reviewer เห็นว่าแก้ตรงไหน ในรูปแบบ annotated screenshot
-- ต้องการให้ test cases อยู่ใน accordion
-- ต้องการใส่ staging preview link สำหรับแต่ละ test case
-
-## Execute
-
-### 1. Prepare
-
-1. ตรวจสอบว่าอยู่ใน branch ทีถูกต้อง ไม่ใช่ `main`
-2. รัน `git status --short` ดูไฟล์ทีเปลี่ยน
-3. รัน `/git-commit` ถ้ามี uncommitted changes
-4. รัน `git log --oneline main..HEAD` เพื่อหา feature
-
-### 2. Identify Test Cases
-
-> Goal: แต่ละ feature ต้องมี test cases ชัดเจน
-
-1. อ่าน commits และ diff
-2. แตก test cases ให้ละเอียด เช่น "Open docs homepage and see hero" แทน "docs build passes"
-3. ตรวจสอบว่ามีรูปหรือหลักฐานจริงสำหรับแต่ละ test case
-4. กำหนด staging preview URL สำหรับแต่ละ test case (ถ้ามี)
-
-### 3. Capture Or Build Source Images
-
-> Goal: ได้ source ภาพจริงก่อน annotate
-
-1. ถ้าเป็น UI:
-   - รัน dev server หรือ staging preview
-   - ใช้ `browser_preview` หรือ `bunx playwright screenshot` capture หน้าจอ
-   - ใช้ viewport `1280x720`
-2. ถ้าเป็น terminal:
-   - ใช้ `capture-terminal` หรือ `record-video-terminal`
-   - รัน test/build/lint เฉพาะ test case
-3. บันทึก source ภาพลง `docs/screenshots/<release>/source/`
-
-### 4. Annotate Screenshots
-
-> Goal: ทำรูปชี้จุดทีแก้ พร้อมข้อความ
-
-1. ใช้ `src/annotate.ts` ใน skill นี้:
-   ```bash
-   bunx tsx src/annotate.ts --config homepage-hero.json
-   ```
-2. `config` (JSON) ระบุ:
-   - `input`: รูปต้นฉบับ
-   - `output`: รูปผลลัพธ์
-   - `annotations`: array ของ `text`, `arrow`, `box`
-3. สคริปต์จะสร้าง HTML แล้วเรียก `bunx --bun playwright screenshot` โดยอัตโนมัติ
-4. หรือใช้ `src/pr-body.ts` สร้าง PR body จาก JSON
-5. ตรวจสอบรูปผลลัพธ์ก่อนใช้
-
-### 5. Build PR Body
-
-> Goal: สร้าง PR body ตาม template
-
-ใช้ `src/pr-body.ts` หรือเขียน markdown ตามโครงสร้างนี้:
-
-```markdown
-## Feature Summary
-
-| No. | Feature | Status | Evidence |
-|---|---|---|---|
-| 1 | Docs migration to VitePress | Ready | [Screenshots](#feature-docs-migration-to-vitepress) |
-
----
-
-## Feature: <name>
-
-### Description
-[อธิบาย feature สั้นๆ]
-
-### Test Cases
-
-<details>
-<summary>Test case 1: Open docs homepage and see hero, nav, and feature cards</summary>
-
-- Preview: [Open local docs preview](http://localhost:4173) (replace with staging URL)
-- Evidence:
-
-![docs homepage annotated](<url>)
-
-</details>
-
-<details>
-<summary>Test case 2: Navigate to /policies/terms and see Terms of Service</summary>
-
-- Preview: [Open terms page](http://localhost:4173/policies/terms)
-- Evidence:
-
-![docs terms annotated](<url>)
-
-</details>
+```text
+┌──────────────────────────────────────────────────────────────────┐
+│  use-create-pr                                                   │
+│  ┌─────────────────────────────────────────────────────────────┐ │
+│  │  ## Feature Summary                                         │ │
+│  │  | No. | Feature | Status | Evidence |                      │ │
+│  │  ...                                                        │ │
+│  │                                                             │ │
+│  │  <details>                                                  │ │
+│  │  <summary>Test case 1: Open homepage</summary>              │ │
+│  │  - Preview: [staging]                                       │ │
+│  │  - ![annotated screenshot](...)                            │ │
+│  │  </details>                                                 │ │
+│  └─────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-ข้อกำหนด:
+## Get Started
 
-- 1 test case = 1 `<details>`
-- แต่ละ test case ต้องมี **staging preview link** (ไม่ใช่รูปทีกดได้)
-- ใส่รูป annotate ภายใน `<details>`
-- ถ้าไม่มี staging ให้ใส่ local preview URL พร้อม note ให้ reviewer ทราบ
+1. Install dependencies
+   ```bash
+   bun install
+   ```
+2. Run the Probot dev server
+   ```bash
+   bun run dev
+   ```
+3. Or use the CLI to build a PR body
+   ```bash
+   bunx tsx src/cli.ts --input pr-body.json --output pr-body.md
+   ```
 
-### 6. Create Or Edit PR
+## Features
 
-1. รัน `/git-push`
-2. รัน `gh pr create --title "..." --body-file pr-body.md --base main`
-3. หรือ `gh pr edit <number> --body-file pr-body.md`
-4. เปิด PR ใน browser ตรวจสอบ accordion, รูป, และ link
+| Icon | Feature | Description |
+|:---:|---------|-------------|
+| 🖼️ | Annotated screenshots | Add arrows, boxes, and text on screenshots automatically |
+| 📝 | Accordion test cases | One `<details>` block per test case with description and evidence |
+| 🔗 | Staging preview links | Separate preview link for each test case (not embedded in the image) |
+| 🤖 | GitHub App (Probot) | Auto-format PR bodies on `pull_request.opened` or via slash commands |
+| 🧰 | CLI + Devin skill | Use locally, in CI, or as a Devin `/use-create-pr` skill |
 
-## Rules
+## Usage
 
-- 1 test case ต้องมี 1 รูป annotate อย่างน้อย
-- ห้ามใช้ mockup/placeholder/AI-generated image
-- ลูกศรและข้อความต้องชี้ตรงจุดที feature เปลี่ยน
-- staging preview link ต้องใส่แยกจากรูป ไม่ใช่ให้รูปเป็น link
-- ใช้ `<details>` สำหรับ accordion
-- ถ้าไม่สามารถ capture UI ได้ ให้ใช้ terminal screenshot พร้อม note
-- สำหรับ private repo ใช้ release assets หรือ GitHub attachments เพื่อให้รูปแสดงได้
+### CLI
 
-## Expected Outcome
+```bash
+bunx tsx src/cli.ts --input pr-body.json --output pr-body.md
+```
 
-- PR body มี feature summary table
-- แต่ละ feature มี test cases ใน accordion
-- แต่ละ test case มี staging preview link + annotated image
-- Reviewer เห็นว่าแก้ตรงไหนโดยไม่ต้องเปิด code
-- ไม่มี placeholder หรือ mockup
+### Probot GitHub App
+
+1. Create a GitHub App in your account or organization.
+2. Set permissions: `Pull requests`, `Issues`, `Contents`.
+3. Subscribe to events: `Pull request`, `Issue comment`.
+4. Install the app on your repositories.
+5. Set environment variables from `.env.example`.
+
+### Devin skill
+
+Copy `SKILL.md` to your `.devin/skills/use-create-pr/` directory and invoke with `/use-create-pr`.
+
+## Configuration
+
+Create `.github/use-create-pr.json` in the target repository:
+
+```json
+{
+  "enabled": true,
+  "features": [
+    {
+      "name": "Docs migration",
+      "description": "Migrate docs to VitePress",
+      "status": "Ready",
+      "testCases": [
+        {
+          "summary": "Homepage loads",
+          "description": "See the docs homepage",
+          "previewUrl": "http://localhost:4173",
+          "imageName": "docs-homepage.png",
+          "imageAlt": "docs homepage"
+        }
+      ]
+    }
+  ],
+  "images": [
+    { "localPath": "docs/screenshots/homepage.png", "name": "docs-homepage.png" }
+  ]
+}
+```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+[MIT](LICENSE.md)

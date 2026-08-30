@@ -1,42 +1,73 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
-interface TestCase {
+export interface TestCaseInput {
   summary: string;
   description: string;
   previewUrl: string;
-  imageUrl: string;
+  imageName: string;
   imageAlt: string;
 }
 
-interface Feature {
+export interface FeatureInput {
   name: string;
   description: string;
   status: string;
-  testCases: TestCase[];
+  testCases: TestCaseInput[];
 }
 
-interface PrBodyInput {
+export interface PrBodyInput {
   title?: string;
   summary?: string;
-  features: Feature[];
+  features: FeatureInput[];
   typeOfChange?: string[];
   testingNotes?: string[];
   checklist?: string[];
   releaseStatus?: string;
   issueReferences?: string;
+  imageBaseUrl?: Record<string, string>;
 }
 
-const inputPath = process.argv.find((a) => a.startsWith("--input="))?.slice("--input=".length);
-const outputPath = process.argv.find((a) => a.startsWith("--output="))?.slice("--output=".length);
+export function buildPrBody(input: PrBodyInput): string {
+  const sections: string[] = [];
 
-if (!inputPath || !outputPath) {
-  console.error("Usage: bunx tsx src/pr-body.ts --input=pr-body.json --output=pr-body.md");
-  process.exit(1);
+  if (input.summary) {
+    sections.push(`# ${input.title || "PR"}\n\n${input.summary}`);
+  }
+
+  sections.push(generateSummaryTable(input.features));
+  sections.push("");
+  sections.push("---");
+  sections.push("");
+
+  for (const feature of input.features) {
+    sections.push(generateFeature(feature, input.imageBaseUrl || {}));
+    sections.push("");
+  }
+
+  if (input.typeOfChange && input.typeOfChange.length > 0) {
+    sections.push(generateSection("Type of Change", input.typeOfChange.map((x) => `- [x] ${x}`)));
+  }
+
+  if (input.testingNotes && input.testingNotes.length > 0) {
+    sections.push(generateSection("Testing", input.testingNotes));
+  }
+
+  if (input.checklist && input.checklist.length > 0) {
+    sections.push(generateSection("Checklist", input.checklist));
+  }
+
+  if (input.releaseStatus) {
+    sections.push(`## Release Status\n\n${input.releaseStatus}`);
+  }
+
+  if (input.issueReferences) {
+    sections.push(`## Issue References\n\n${input.issueReferences}`);
+  }
+
+  return sections.filter(Boolean).join("\n\n");
 }
 
-const input: PrBodyInput = JSON.parse(readFileSync(inputPath, "utf-8"));
-
-function generateSummaryTable(features: Feature[]) {
+function generateSummaryTable(features: FeatureInput[]) {
   const rows = features
     .map(
       (f, i) =>
@@ -51,9 +82,10 @@ function generateSummaryTable(features: Feature[]) {
 ${rows}`;
 }
 
-function generateFeature(feature: Feature) {
+function generateFeature(feature: FeatureInput, imageBaseUrl: Record<string, string>) {
   const testCases = feature.testCases
     .map((tc, i) => {
+      const imageUrl = imageBaseUrl[tc.imageName] || tc.imageName;
       return `<details>
 <summary>Test case ${i + 1}: ${tc.summary}</summary>
 
@@ -61,7 +93,7 @@ function generateFeature(feature: Feature) {
 - Description: ${tc.description}
 - Evidence:
 
-![${tc.imageAlt}](${tc.imageUrl})
+![${tc.imageAlt}](${imageUrl})
 
 </details>`;
     })
@@ -77,32 +109,23 @@ ${feature.description}
 ${testCases}`;
 }
 
-function generateSection(title: string, items?: string[]) {
-  if (!items || items.length === 0) return "";
+function generateSection(title: string, items: string[]) {
   return `## ${title}
 
-${items.map((item) => `- ${item}`).join("\n")}`;
+${items.join("\n")}`;
 }
-
-const body = [
-  input.summary ? `# ${input.title || "PR"}\n\n${input.summary}` : "",
-  generateSummaryTable(input.features),
-  "",
-  "---",
-  "",
-  ...input.features.map(generateFeature),
-  input.typeOfChange ? generateSection("Type of Change", input.typeOfChange.map((x) => `[x] ${x}`)) : "",
-  input.testingNotes ? generateSection("Testing", input.testingNotes) : "",
-  input.checklist ? generateSection("Checklist", input.checklist) : "",
-  input.releaseStatus ? `## Release Status\n\n${input.releaseStatus}` : "",
-  input.issueReferences ? `## Issue References\n\n${input.issueReferences}` : "",
-]
-  .filter(Boolean)
-  .join("\n\n");
-
-writeFileSync(outputPath, body);
-console.log(`PR body saved to: ${outputPath}`);
 
 function slug(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
+// CLI entry point
+const inputPath = process.argv.find((a) => a.startsWith("--input="))?.slice("--input=".length);
+const outputPath = process.argv.find((a) => a.startsWith("--output="))?.slice("--output=".length);
+
+if (inputPath && outputPath) {
+  const input: PrBodyInput = JSON.parse(readFileSync(inputPath, "utf-8"));
+  const body = buildPrBody(input);
+  writeFileSync(outputPath, body);
+  console.log(`PR body saved to: ${outputPath}`);
 }

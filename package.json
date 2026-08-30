@@ -1,31 +1,41 @@
 {
   "name": "use-create-pr",
   "version": "0.1.0",
-  "description": "Create fully-featured PRs with annotated screenshots, test-case accordions, and staging preview links",
-  "main": "src/annotate.ts",
+  "description": "GitHub bot + CLI for creating fully-featured PRs with annotated screenshots, test-case accordions, and staging preview links",
+  "main": "src/index.ts",
   "type": "module",
   "bin": {
-    "use-create-pr": "src/annotate.ts"
+    "use-create-pr": "src/cli.ts"
   },
   "scripts": {
+    "build": "tsc",
+    "dev": "bunx tsx src/index.ts",
+    "start": "node dist/index.js",
+    "test": "bun test",
     "annotate": "bunx tsx src/annotate.ts",
-    "pr-body": "bunx tsx src/pr-body.ts"
+    "pr-body": "bunx tsx src/pr-body.ts",
+    "create-pr": "bunx tsx src/cli.ts"
   },
   "keywords": [
-    "pr",
+    "probot",
+    "github-bot",
+    "pull-request",
     "screenshots",
     "annotations",
-    "github",
     "devin-skill"
   ],
   "author": "newkub",
   "license": "MIT",
-  "devDependencies": {
-    "@playwright/test": "^1.62.1",
-    "@types/bun": "latest",
-    "tsx": "latest"
+  "dependencies": {
+    "probot": "^13.3.6",
+    "@octokit/rest": "^21.0.2",
+    "@octokit/webhooks": "^13.3.0",
+    "playwright": "^1.48.0"
   },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0"
   }
 }
