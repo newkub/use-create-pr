@@ -1,6 +1,6 @@
-import type { ProbotContext } from "probot";
+import type { Context } from "probot";
 
-export async function handleIssueCommentCreated(context: ProbotContext<"issue_comment.created">) {
+export async function handleIssueCommentCreated(context: Context<"issue_comment.created">) {
   const { comment, issue, repository } = context.payload;
   if (!repository) return;
 

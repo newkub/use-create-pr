@@ -1,8 +1,8 @@
-import type { ProbotContext, ProbotOctokit } from "probot";
+import type { Context } from "probot";
 import { buildPrBody } from "../pr-body.js";
 import { uploadReleaseAssets } from "../github/release.js";
 
-export async function handlePullRequestOpened(context: ProbotContext<"pull_request.opened">) {
+export async function handlePullRequestOpened(context: Context<"pull_request.opened">) {
   const { pull_request: pr, repository } = context.payload;
 
   if (!repository) {
@@ -45,7 +45,7 @@ export async function handlePullRequestOpened(context: ProbotContext<"pull_reque
 }
 
 async function getRepoConfig(
-  octokit: ProbotOctokit,
+  octokit: any,
   owner: string,
   repo: string,
   ref: string,

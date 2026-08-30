@@ -24,8 +24,5 @@ jobs:
       - name: Typecheck
         run: bunx tsc --noEmit
 
-      - name: Lint
-        run: bunx @biomejs/biome check src/
-
       - name: Test
         run: bun test

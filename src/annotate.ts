@@ -1,4 +1,4 @@
-import { generateHtml, screenshotHtml, loadConfig } from "./annotate-core";
+import { generateHtml, screenshotHtml, loadConfig } from "./annotate-core.js";
 
 const args = process.argv.slice(2);
 let configPath = "";

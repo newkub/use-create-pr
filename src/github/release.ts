@@ -1,9 +1,8 @@
 import { readFileSync } from "node:fs";
-import { extname, basename } from "node:path";
-import type { ProbotOctokit } from "probot";
+import { extname } from "node:path";
 
 export async function uploadReleaseAssets(
-  octokit: ProbotOctokit,
+  octokit: any,
   owner: string,
   repo: string,
   ref: string,

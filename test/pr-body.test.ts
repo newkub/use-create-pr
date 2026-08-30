@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { buildPrBody } from "../src/pr-body";
+import { buildPrBody } from "../src/pr-body.js";
 
 const features = [
   {
