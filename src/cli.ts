@@ -9,13 +9,16 @@ function getArg(name: string): string | undefined {
   return args[index + 1];
 }
 
-const input = getArg("input");
-const output = getArg("output") || "/dev/stdout";
+const inputArg = getArg("input");
+const outputArg = getArg("output") || "/dev/stdout";
 
-if (!input) {
+if (!inputArg) {
   console.error("Usage: bunx tsx src/cli.ts --input pr-body.json [--output pr-body.md]");
   process.exit(1);
 }
+
+const input = inputArg;
+const output = outputArg;
 
 async function main() {
   const file = Bun.file(input);

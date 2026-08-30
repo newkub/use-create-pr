@@ -21,7 +21,7 @@ export async function handleIssueCommentCreated(context: Context<"issue_comment.
       title,
       head,
       base,
-      body: `Created from issue #${issue.number}\n\n/cc @${comment.user.login}`,
+      body: `Created from issue #${issue.number}\n\n/cc @${comment.user?.login ?? "unknown"}`,
     });
 
     await context.octokit.rest.issues.createComment({
