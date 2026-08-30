@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from "node:fs";
 import { buildPrBody, type PrBodyInput } from "./pr-body.js";
 
 const args = process.argv.slice(2);
@@ -18,12 +17,21 @@ if (!input) {
   process.exit(1);
 }
 
-const data: PrBodyInput = JSON.parse(readFileSync(input, "utf-8"));
-const body = buildPrBody(data);
+async function main() {
+  const file = Bun.file(input);
+  const text = await file.text();
+  const data: PrBodyInput = JSON.parse(text);
+  const body = buildPrBody(data);
 
-if (output === "/dev/stdout") {
-  console.log(body);
-} else {
-  writeFileSync(output, body);
-  console.log(`PR body written to ${output}`);
+  if (output === "/dev/stdout") {
+    console.log(body);
+  } else {
+    await Bun.write(output, body);
+    console.log(`PR body written to ${output}`);
+  }
 }
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

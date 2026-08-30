@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from "node:fs";
+// Pure module — file I/O is optional via CLI below
 
 export interface TestCaseInput {
   summary: string;
@@ -123,9 +123,17 @@ function slug(name: string) {
 const inputPath = process.argv.find((a) => a.startsWith("--input="))?.slice("--input=".length);
 const outputPath = process.argv.find((a) => a.startsWith("--output="))?.slice("--output=".length);
 
-if (inputPath && outputPath) {
-  const input: PrBodyInput = JSON.parse(readFileSync(inputPath, "utf-8"));
+async function runCli() {
+  if (!inputPath || !outputPath) return;
+  const file = Bun.file(inputPath);
+  const text = await file.text();
+  const input: PrBodyInput = JSON.parse(text);
   const body = buildPrBody(input);
-  writeFileSync(outputPath, body);
+  await Bun.write(outputPath, body);
   console.log(`PR body saved to: ${outputPath}`);
 }
+
+runCli().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

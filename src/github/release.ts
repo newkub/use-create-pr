@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import { extname } from "node:path";
 
 export async function uploadReleaseAssets(
@@ -22,13 +21,14 @@ export async function uploadReleaseAssets(
   const urls: Record<string, string> = {};
 
   for (const image of images) {
-    const data = readFileSync(image.localPath);
+    const file = Bun.file(image.localPath);
+    const data = new Uint8Array(await file.arrayBuffer());
     const { data: asset } = await octokit.rest.repos.uploadReleaseAsset({
       owner,
       repo,
       release_id: release.id,
       name: image.name,
-      data: data as any,
+      data,
       headers: {
         "content-type": contentType(image.name),
         "content-length": data.length,

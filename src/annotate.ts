@@ -1,4 +1,4 @@
-import { generateHtml, screenshotHtml, loadConfig } from "./annotate-core.js";
+import { generateHtml, screenshotHtml, loadConfig } from "./core/index.js";
 
 const args = process.argv.slice(2);
 let configPath = "";
@@ -15,7 +15,14 @@ if (!configPath) {
   process.exit(1);
 }
 
-const config = loadConfig(configPath);
-const html = generateHtml(config);
-screenshotHtml(html, config.output);
-console.log(`Annotated image saved to: ${config.output}`);
+async function main() {
+  const config = await loadConfig(configPath);
+  const html = await generateHtml(config);
+  await screenshotHtml(html, config.output);
+  console.log(`Annotated image saved to: ${config.output}`);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
