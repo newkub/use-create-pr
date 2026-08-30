@@ -1,0 +1,31 @@
+{
+  "name": "use-create-pr",
+  "version": "0.1.0",
+  "description": "Create fully-featured PRs with annotated screenshots, test-case accordions, and staging preview links",
+  "main": "src/annotate.ts",
+  "type": "module",
+  "bin": {
+    "use-create-pr": "src/annotate.ts"
+  },
+  "scripts": {
+    "annotate": "bunx tsx src/annotate.ts",
+    "pr-body": "bunx tsx src/pr-body.ts"
+  },
+  "keywords": [
+    "pr",
+    "screenshots",
+    "annotations",
+    "github",
+    "devin-skill"
+  ],
+  "author": "newkub",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/bun": "latest",
+    "tsx": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
