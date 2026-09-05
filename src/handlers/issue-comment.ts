@@ -5,12 +5,12 @@ export async function handleIssueCommentCreated(context: Context<"issue_comment.
   if (!repository) return;
 
   const cmd = comment.body?.trim().toLowerCase();
-  if (!cmd?.startsWith("/use-create-pr")) return;
+  if (!cmd?.startsWith("/create-github-pr")) return;
 
-  context.log.info({ issue: issue.number }, "use-create-pr: slash command received");
+  context.log.info({ issue: issue.number }, "create-github-pr: slash command received");
 
   const args = parseArgs(cmd);
-  const head = args.head || `use-create-pr/${issue.number}`;
+  const head = args.head || `create-github-pr/${issue.number}`;
   const base = args.base || "main";
   const title = args.title || `feat: create PR from issue #${issue.number}`;
 
@@ -31,9 +31,9 @@ export async function handleIssueCommentCreated(context: Context<"issue_comment.
       body: `Created PR from this issue (head: \`${head}\`, base: \`${base}\`).`,
     });
 
-    context.log.info({ issue: issue.number }, "use-create-pr: PR created");
+    context.log.info({ issue: issue.number }, "create-github-pr: PR created");
   } catch (error) {
-    context.log.error({ err: error }, "use-create-pr: failed to create PR");
+    context.log.error({ err: error }, "create-github-pr: failed to create PR");
   }
 }
 

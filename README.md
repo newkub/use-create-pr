@@ -1,6 +1,6 @@
 > ![Status](https://img.shields.io/badge/status-in_development-red)
 
-# use-create-pr
+# create-github-pr
 
 GitHub bot + CLI for creating fully-featured PRs with annotated screenshots, test-case accordions, and staging preview links.
 
@@ -11,11 +11,11 @@ GitHub bot + CLI for creating fully-featured PRs with annotated screenshots, tes
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
-│                      use-create-pr                       │
+│                      create-github-pr                       │
 │                                                          │
 │  GitHub App  +  CLI  +  Annotate                         │
 │                                                          │
-│  .github/use-create-pr.json                              │
+│  .github/create-github-pr.json                              │
 │  ┌──────────────────────────────────────────────────┐    │
 │  │  features: [                                     │    │
 │  │    { name: "Docs", testCases: [...] }            │    │
@@ -23,7 +23,7 @@ GitHub bot + CLI for creating fully-featured PRs with annotated screenshots, tes
 │  └──────────────────────────────────────────────────┘    │
 │                                                          │
 │  pull_request.opened → build PR body → update PR         │
-│  issue_comment /use-create-pr → create PR                │
+│  issue_comment /create-github-pr → create PR                │
 └──────────────────────────────────────────────────────────┘
 ```
 
@@ -56,9 +56,9 @@ GitHub bot + CLI for creating fully-featured PRs with annotated screenshots, tes
 |:----:|:--------|:------------|:--------|:------|
 | ![icon](https://api.iconify.design/mdi:file-document-edit.svg?color=%231976d2&width=16) | PR Body Builder | Generate markdown PR bodies from JSON input | Removes manual formatting in PRs | `buildPrBody(data)` or `bunx tsx src/cli.ts` |
 | ![icon](https://api.iconify.design/mdi:brush.svg?color=%237b1fa2&width=16) | Annotated Screenshots | Draw arrows, boxes, and text labels on screenshots | Visual evidence is clearer | `bunx tsx src/annotate.ts --config annotate.json` |
-| ![icon](https://api.iconify.design/mdi:menu.svg?color=%23c2185b&width=16) | Test Case Accordions | One `<details>` block per test case with preview and image | Organizes evidence by feature | `.github/use-create-pr.json` |
+| ![icon](https://api.iconify.design/mdi:menu.svg?color=%23c2185b&width=16) | Test Case Accordions | One `<details>` block per test case with preview and image | Organizes evidence by feature | `.github/create-github-pr.json` |
 | ![icon](https://api.iconify.design/mdi:robot.svg?color=%230097a7&width=16) | Probot GitHub App | Auto-update PR bodies on `pull_request.opened` | Hands-free PR formatting | `bun run dev` |
-| ![icon](https://api.iconify.design/mdi:comment.svg?color=%23303f9f&width=16) | Slash Commands | Create PRs from issue comments with `/use-create-pr` | Faster issue-to-PR flow | `/use-create-pr --head <branch>` |
+| ![icon](https://api.iconify.design/mdi:comment.svg?color=%23303f9f&width=16) | Slash Commands | Create PRs from issue comments with `/create-github-pr` | Faster issue-to-PR flow | `/create-github-pr --head <branch>` |
 | ![icon](https://api.iconify.design/mdi:cloud-upload.svg?color=%23388e3c&width=16) | Release Asset Upload | Upload screenshots to a GitHub release for PR body | Images persist in the PR body | `uploadReleaseAssets(...)` |
 | ![icon](https://api.iconify.design/mdi:cog.svg?color=%2300796b&width=16) | JSON Config | Declarative features and test cases in repository | Single source of truth for PR content | `config.features` |
 | ![icon](https://api.iconify.design/mdi:camera.svg?color=%23f57c00&width=16) | Playwright Screenshots | Render annotated HTML to PNG | Automated evidence capture | `bunx playwright screenshot ...` |
@@ -92,7 +92,7 @@ bunx tsx src/cli.ts --help
 <details>
 <summary>GitHub App webhook flow & PR body layout</summary>
 
-Install the GitHub App, subscribe to `Pull request` and `Issue comment` events, and add `.github/use-create-pr.json` to the repository. When a PR is opened, the bot uploads images, builds the body, and updates the PR. Comment `/use-create-pr --head <branch>` on an issue to create a PR.
+Install the GitHub App, subscribe to `Pull request` and `Issue comment` events, and add `.github/create-github-pr.json` to the repository. When a PR is opened, the bot uploads images, builds the body, and updates the PR. Comment `/create-github-pr --head <branch>` on an issue to create a PR.
 
 ```text
 ┌──────────────────────────────────────────────────────────┐

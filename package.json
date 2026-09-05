@@ -1,11 +1,11 @@
 {
-  "name": "use-create-pr",
+  "name": "create-github-pr",
   "version": "0.1.0",
   "description": "GitHub bot + CLI for creating fully-featured PRs with annotated screenshots, test-case accordions, and staging preview links",
   "main": "src/index.ts",
   "type": "module",
   "bin": {
-    "use-create-pr": "src/cli.ts"
+    "create-github-pr": "src/cli.ts"
   },
   "scripts": {
     "build": "tsc",

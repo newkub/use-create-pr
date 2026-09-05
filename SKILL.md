@@ -1,96 +1,109 @@
 ---
-name: use-create-pr
-description: สร้าง PR พร้อม template, test cases, screenshots, และ preview links
+name: create-github-pr
+description: Create a pull request from the current branch with title, body, labels, reviewers, and optional annotated screenshots
 argument-hint: "[scope]"
 related:
-  - create-github-pr
-  - capture-terminal
-  - record-video-terminal
+  - git-commit
+  - git-push
   - run-check
   - run-test
+  - capture-terminal
+  - record-video-terminal
   - open-github-pr
-  - git-push
+  - open-web
+  - merge-github-pr
+  - update-github-pr
+  - implement-github-issue
+  - open-github-repo
+  - open-github-repo-personal
+  - open-github-repo-org
 ---
 
 ## Goal
 
-สร้าง pull request สำหรับ feature ทีมี UX/UI เปลี่ยนแปลง โดย PR body มี template, test cases accordion, annotated screenshots (1 รูปต่อ 1 test case) และ staging preview links
+Create a pull request from the current branch with title, body, labels, reviewers, and optional annotated screenshots following project conventions.
 
 ## Scope
 
-ใช้เมื่อ:
-
-- PR มีหลาย feature ทีต้องอธิบาย UX/UI
-- ต้องการให้ reviewer เห็นว่าแก้ตรงไหน ในรูปแบบ annotated screenshot
-- ต้องการให้ test cases อยู่ใน accordion
-- ต้องการใส่ staging preview link สำหรับแต่ละ test case
+- For skills: `implement-github-issue`, `open-github-pr`, `open-github-repo`, `open-github-repo-personal`, `open-github-repo-org`, `update-github-pr`
+- Use after implementation when a PR is needed to merge into the base branch
+- Use annotated screenshots and accordion test cases when the PR changes UX/UI
 
 ## Execute
 
-### 0. Setup
-
-> Goal: ตรวจสอบ environment สำหรับสร้าง PR
-
-1. ตรวจสอบ git: `git --version`
-2. ตรวจสอบ `gh` CLI: `gh --version`
-3. ถ้ายังไม่มี `gh`:
-   - `mise use -g gh`
-   - หรือ `brew install gh` / `winget install --id GitHub.cli`
-4. Login: `gh auth login` แล้ว verify `gh auth status`
-5. ตรวจสอบ remote: `git remote -v` ต้องมี origin
-6. ถ้าใช้ `bunx` สำหรับ screenshots/scripts → `bun --version`
-
 ### 1. Prepare
 
-> Goal: เตรียม Prepare
-1. ตรวจสอบว่าอยู่ใน branch ทีถูกต้อง ไม่ใช่ `main`
-2. รัน `git status --short` ดูไฟล์ทีเปลี่ยน
-3. รัน `/git-commit` ถ้ามี uncommitted changes
-4. รัน `git log --oneline main..HEAD` เพื่อหา feature
+> Goal: Check state before creating the PR
 
-### 2. Identify Test Cases
+1. Confirm you are on the correct branch, not `main`
+2. Run `git status --short` to see changed files
+3. If there are uncommitted changes, use `/git-commit` first
+4. Run `git log --oneline main..HEAD` to review commits
 
-> Goal: แต่ละ feature ต้องมี test cases ชัดเจน
+### 2. Push Branch
 
-1. อ่าน commits และ diff
-2. แตก test cases ให้ละเอียด เช่น "Open docs homepage and see hero" แทน "docs build passes"
-3. ตรวจสอบว่ามีรูปหรือหลักฐานจริงสำหรับแต่ละ test case
-4. กำหนด staging preview URL สำหรับแต่ละ test case (ถ้ามี)
+> Goal: Push the branch to remote
 
-### 3. Capture Or Build Source Images
+1. Run `/git-push` or `git push -u origin <branch>`
+2. Confirm the branch was pushed successfully
 
-> Goal: ได้ source ภาพจริงก่อน annotate
+### 3. Run Checks
 
-1. ถ้าเป็น UI:
-   - รัน dev server หรือ staging preview
-   - ใช้ `browser_preview` หรือ `bunx playwright screenshot` capture หน้าจอ
-   - ใช้ viewport `1280x720`
-2. ถ้าเป็น terminal:
-   - ใช้ `capture-terminal` หรือ `record-video-terminal`
-   - รัน test/build/lint เฉพาะ test case
-3. บันทึก source ภาพลง `docs/screenshots/<release>/source/`
+> Goal: Verify quality before creating the PR
 
-### 4. Annotate Screenshots
+1. Run `/run-check` (lint, typecheck, scan)
+2. Run `/run-test` for tests
+3. If checks fail, run `/resolve-errors` first
 
-> Goal: ทำรูปชี้จุดทีแก้ พร้อมข้อความ
+### 4. Build PR Body
 
-1. ใช้ `src/annotate.ts` ใน skill นี้:
+> Goal: Create a feature-based PR title and body with evidence
+
+1. Create the title from commit messages or the task, using conventional commit format: `<type>(<scope>): <subject>`
+2. If the repo has `.github/pull_request_template.md`, read and use it as the base
+3. If not, read `create-github-pr/templates/index.md` and pick a template by type:
+   - `feature` → `templates/feature.md`
+   - `bugfix` → `templates/bugfix.md`
+   - `refactor` → `templates/refactor.md`
+   - `docs` → `templates/docs.md`
+   - `hotfix` → `templates/hotfix.md`
+4. Read the selected template and replace placeholders with real data
+5. If the PR contains multiple features, use `feature.md` and split the body into multiple `## Feature: <name>` sections
+6. Do not use mockups, placeholders, or unverified images/videos in the Image/Video column
+7. If unclear, use `/ask-me`
+
+### 5. Capture Or Build Source Images
+
+> Goal: Get real source images before annotating
+
+1. If the PR changes UI:
+   - Run dev server or staging preview
+   - Use `browser_preview` or `bunx playwright screenshot` to capture the screen
+   - Use viewport `1280x720`
+2. If the PR is terminal-only:
+   - Use `capture-terminal` or `record-video-terminal`
+   - Run test/build/lint specific to the test case
+3. Save source images to `docs/screenshots/<release>/source/`
+
+### 6. Annotate Screenshots
+
+> Goal: Add arrows and text to point out what changed
+
+1. Use the `create-github-pr` package CLI:
    ```bash
    bunx tsx src/annotate.ts --config homepage-hero.json
    ```
-2. `config` (JSON) ระบุ:
-   - `input`: รูปต้นฉบับ
-   - `output`: รูปผลลัพธ์
-   - `annotations`: array ของ `text`, `arrow`, `box`
-3. สคริปต์จะสร้าง HTML แล้วเรียก `bunx --bun playwright screenshot` โดยอัตโนมัติ
-4. หรือใช้ `src/pr-body.ts` สร้าง PR body จาก JSON
-5. ตรวจสอบรูปผลลัพธ์ก่อนใช้
+2. The `config` JSON specifies:
+   - `input`: original image
+   - `output`: output image
+   - `annotations`: array of `text`, `arrow`, `box`
+3. The script generates HTML and calls `bunx --bun playwright screenshot` automatically
+4. Or use `bunx tsx src/pr-body.ts` to generate a PR body from JSON
+5. Verify the output images before using them
 
-### 5. Build PR Body
+### 7. Build PR Body With Test Cases
 
-> Goal: สร้าง PR body ตาม template
-
-ใช้ `src/pr-body.ts` หรือเขียน markdown ตามโครงสร้างนี้:
+> Goal: Build a PR body with accordion test cases and evidence
 
 ```markdown
 ## Feature Summary
@@ -104,7 +117,7 @@ related:
 ## Feature: <name>
 
 ### Description
-[อธิบาย feature สั้นๆ]
+[Short feature description]
 
 ### Test Cases
 
@@ -117,52 +130,64 @@ related:
 ![docs homepage annotated](<url>)
 
 </details>
-
-<details>
-<summary>Test case 2: Navigate to /policies/terms and see Terms of Service</summary>
-
-- Preview: [Open terms page](http://localhost:4173/policies/terms)
-- Evidence:
-
-![docs terms annotated](<url>)
-
-</details>
 ```
 
-ข้อกำหนด:
+Requirements:
 
 - 1 test case = 1 `<details>`
-- แต่ละ test case ต้องมี staging preview link (ไม่ใช่รูปทีกดได้)
-- ใส่รูป annotate ภายใน `<details>`
-- ถ้าไม่มี staging ให้ใส่ local preview URL พร้อม note ให้ reviewer ทราบ
+- Each test case must have a staging preview link (not a clickable image)
+- Place annotated images inside `<details>`
+- If no staging is available, use a local preview URL with a note for reviewers
 
-### 6. Create Or Edit PR
+### 8. Create PR
 
-1. รัน `/git-push`
-2. รัน `gh pr create --title "..." --body-file pr-body.md --base main`
-3. หรือ `gh pr edit <number> --body-file pr-body.md`
-4. เปิด PR ใน browser ตรวจสอบ accordion, รูป, และ link
+> Goal: Create the pull request
+
+1. Run `gh pr create --title "<title>" --body "<body>" --base <base-branch>`
+2. Add labels with `--label "<label>"`
+3. Add reviewers with `--reviewer <reviewer>`
+4. Add assignees with `--assignee <user>`
+5. If it is a draft, use `--draft`
+
+### 9. Link Issue
+
+> Goal: Link related issues
+
+1. If an issue number exists, add `Closes #<issue>` to the body
+2. If not, ask the user whether to link an issue
+3. If a project board exists, use `gh project item-add`
+
+### 10. Report
+
+> Goal: Summarize the result
+
+1. Report the PR number, URL, and title
+2. Report status checks and labels
+3. After creating the PR, open it in a browser with `/open-web` or `gh pr view --web`
+4. If the user wants to merge next, use `/merge-github-pr`
 
 ## Rules
 
-- 1 test case ต้องมี 1 รูป annotate อย่างน้อย
-- ห้ามใช้ mockup/placeholder/AI-generated image
-- ลูกศรและข้อความต้องชี้ตรงจุดที feature เปลี่ยน
-- staging preview link ต้องใส่แยกจากรูป ไม่ใช่ให้รูปเป็น link
-- ใช้ `<details>` สำหรับ accordion
-- ถ้าไม่สามารถ capture UI ได้ ให้ใช้ terminal screenshot พร้อม note
-- สำหรับ private repo ใช้ release assets หรือ GitHub attachments เพื่อให้รูปแสดงได้
-
-- ใช้ /create-github-pr ถ้าจำเป็น
-- ใช้ /run-check ถ้าจำเป็น
-- ใช้ /run-test ถ้าจำเป็น
-- ใช้ /open-github-pr ถ้าจำเป็น
+- Run checks before creating a PR
+- Push the branch before creating a PR
+- Do not create a PR directly on `main`
+- Use a PR template if one exists
+- Add `Closes #<issue>` if relevant
+- Do not use mockups or placeholders for images/videos in feature tables; use evidence from `/record-video-terminal`, `/capture-terminal`, or the `create-github-pr` annotate CLI
+- 1 test case must have at least 1 annotated image for UI changes
+- Arrows and text must point directly to the changed feature
+- Staging preview link must be separate from the image, not the image itself
+- Use `<details>` for accordion test cases
+- If you cannot capture UI, use a terminal screenshot with a note
+- For private repos, use release assets or GitHub attachments to display images
+- If the title/body is unclear, ask the user
 
 ## Expected Outcome
 
-- PR body มี feature summary table
-- แต่ละ feature มี test cases ใน accordion
-- แต่ละ test case มี staging preview link + annotated image
-- Reviewer เห็นว่าแก้ตรงไหนโดยไม่ต้องเปิด code
-- ไม่มี placeholder หรือ mockup
-
+- PR is created with a feature-based title, body, and labels
+- Each feature has a heading and a 5-column table (Description, Benefit, Why, File Change, Image/Video)
+- Image/Video in the table is real evidence; no mockups
+- Branch is pushed
+- Checks pass before the PR is created
+- Issue is linked if available
+- UI-changing PRs include annotated screenshots inside accordion test cases

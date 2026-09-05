@@ -12,11 +12,11 @@ export async function handlePullRequest(context: Context<"pull_request.opened" |
 
   const config = await getRepoConfig(context.octokit, repository.owner.login, repository.name, pr.head.ref);
   if (!config || !config.enabled) {
-    context.log.info("use-create-pr is disabled or no config");
+    context.log.info("create-github-pr is disabled or no config");
     return;
   }
 
-  context.log.info({ pr: pr.number }, "use-create-pr: PR opened");
+  context.log.info({ pr: pr.number }, "create-github-pr: PR opened");
 
   const imageUrls = await uploadReleaseAssets(
     context.octokit,
@@ -41,7 +41,7 @@ export async function handlePullRequest(context: Context<"pull_request.opened" |
     body,
   });
 
-  context.log.info({ pr: pr.number }, "use-create-pr: PR body updated");
+  context.log.info({ pr: pr.number }, "create-github-pr: PR body updated");
 }
 
 async function getRepoConfig(
@@ -54,7 +54,7 @@ async function getRepoConfig(
     const { data } = await octokit.rest.repos.getContent({
       owner,
       repo,
-      path: ".github/use-create-pr.json",
+      path: ".github/create-github-pr.json",
       ref,
     });
 

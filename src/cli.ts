@@ -13,7 +13,7 @@ const inputArg = getArg("input");
 const outputArg = getArg("output") || "/dev/stdout";
 
 if (!inputArg) {
-  console.error("Usage: bunx tsx src/cli.ts --input pr-body.json [--output pr-body.md]");
+  console.error("Usage: create-github-pr --input pr-body.json [--output pr-body.md]");
   process.exit(1);
 }
 
