@@ -11,19 +11,17 @@ GitHub bot + CLI for creating fully-featured PRs with annotated screenshots, tes
 
 ```text
 ┌──────────────────────────────────────────────────────────┐
-│                      create-github-pr                       │
+│  create-github-pr                                        │
 │                                                          │
-│  GitHub App  +  CLI  +  Annotate                         │
+│ GitHub App + CLI + Annotate                              │
 │                                                          │
-│  .github/create-github-pr.json                              │
-│  ┌──────────────────────────────────────────────────┐    │
-│  │  features: [                                     │    │
-│  │    { name: "Docs", testCases: [...] }            │    │
-│  │  ]                                               │    │
-│  └──────────────────────────────────────────────────┘    │
+│ .github/create-github-pr.json                            │
+│ features: [                                              │
+│   { name: "Docs", testCases: [...] }                     │
+│ ]                                                        │
 │                                                          │
-│  pull_request.opened → build PR body → update PR         │
-│  issue_comment /create-github-pr → create PR                │
+│ pull_request.opened -> build PR body -> update PR        │
+│ issue_comment /create-github-pr -> create PR             │
 └──────────────────────────────────────────────────────────┘
 ```
 
