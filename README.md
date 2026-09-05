@@ -1,108 +1,124 @@
-> ![Status](https://img.shields.io/badge/status-in_development-orange)
+> ![Status](https://img.shields.io/badge/status-in_development-red)
 
 # use-create-pr
 
-Create fully-featured pull requests with annotated screenshots, test-case accordions, and staging preview links.
+GitHub bot + CLI for creating fully-featured PRs with annotated screenshots, test-case accordions, and staging preview links.
 
-![GitHub release](https://img.shields.io/github/v/release/newkub/use-create-pr?color=10b981)
-![License](https://img.shields.io/badge/license-MIT-blue)
-![Issues](https://img.shields.io/github/issues/newkub/use-create-pr?color=ef4444)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.1-3178c6)
+![Bun](https://img.shields.io/badge/Bun-1.3.13-f9f1e1)
+![Probot](https://img.shields.io/badge/Probot-14.3.2-3b82f6)
+![Playwright](https://img.shields.io/badge/Playwright-1.63.0-2ead5a)
 
 ```text
-┌──────────────────────────────────────────────────────────────────┐
-│  use-create-pr                                                   │
-│  ┌─────────────────────────────────────────────────────────────┐ │
-│  │  ## Feature Summary                                         │ │
-│  │  | No. | Feature | Status | Evidence |                      │ │
-│  │  ...                                                        │ │
-│  │                                                             │ │
-│  │  <details>                                                  │ │
-│  │  <summary>Test case 1: Open homepage</summary>              │ │
-│  │  - Preview: [staging]                                       │ │
-│  │  - ![annotated screenshot](...)                            │ │
-│  │  </details>                                                 │ │
-│  └─────────────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│                      use-create-pr                       │
+│                                                          │
+│  GitHub App  +  CLI  +  Annotate                         │
+│                                                          │
+│  .github/use-create-pr.json                              │
+│  ┌──────────────────────────────────────────────────┐    │
+│  │  features: [                                     │    │
+│  │    { name: "Docs", testCases: [...] }            │    │
+│  │  ]                                               │    │
+│  └──────────────────────────────────────────────────┘    │
+│                                                          │
+│  pull_request.opened → build PR body → update PR         │
+│  issue_comment /use-create-pr → create PR                │
+└──────────────────────────────────────────────────────────┘
 ```
 
 ## Get Started
 
-1. Install dependencies
+1. Install dependencies — `bun install`
    ```bash
    bun install
    ```
-2. Run the Probot dev server
+2. Run the Probot dev server — `bun run dev`
    ```bash
    bun run dev
    ```
-3. Or use the CLI to build a PR body
+3. Build a PR body from JSON — `bunx tsx src/cli.ts --input pr-body.json --output pr-body.md`
    ```bash
    bunx tsx src/cli.ts --input pr-body.json --output pr-body.md
+   ```
+4. Annotate a screenshot — `bunx tsx src/annotate.ts --config annotate.json`
+   ```bash
+   bunx tsx src/annotate.ts --config annotate.json
+   ```
+5. Run tests — `bun test`
+   ```bash
+   bun test
    ```
 
 ## Features
 
-| Icon | Feature | Description |
-|:---:|---------|-------------|
-| 🖼️ | Annotated screenshots | Add arrows, boxes, and text on screenshots automatically |
-| 📝 | Accordion test cases | One `<details>` block per test case with description and evidence |
-| 🔗 | Staging preview links | Separate preview link for each test case (not embedded in the image) |
-| 🤖 | GitHub App (Probot) | Auto-format PR bodies on `pull_request.opened` or via slash commands |
-| 🧰 | CLI + Devin skill | Use locally, in CI, or as a Devin `/use-create-pr` skill |
+| Icon | Feature | Description | Benefit | Usage |
+|:----:|:--------|:------------|:--------|:------|
+| ![icon](https://api.iconify.design/mdi:file-document-edit.svg?color=%231976d2&width=16) | PR Body Builder | Generate markdown PR bodies from JSON input | Removes manual formatting in PRs | `buildPrBody(data)` or `bunx tsx src/cli.ts` |
+| ![icon](https://api.iconify.design/mdi:brush.svg?color=%237b1fa2&width=16) | Annotated Screenshots | Draw arrows, boxes, and text labels on screenshots | Visual evidence is clearer | `bunx tsx src/annotate.ts --config annotate.json` |
+| ![icon](https://api.iconify.design/mdi:menu.svg?color=%23c2185b&width=16) | Test Case Accordions | One `<details>` block per test case with preview and image | Organizes evidence by feature | `.github/use-create-pr.json` |
+| ![icon](https://api.iconify.design/mdi:robot.svg?color=%230097a7&width=16) | Probot GitHub App | Auto-update PR bodies on `pull_request.opened` | Hands-free PR formatting | `bun run dev` |
+| ![icon](https://api.iconify.design/mdi:comment.svg?color=%23303f9f&width=16) | Slash Commands | Create PRs from issue comments with `/use-create-pr` | Faster issue-to-PR flow | `/use-create-pr --head <branch>` |
+| ![icon](https://api.iconify.design/mdi:cloud-upload.svg?color=%23388e3c&width=16) | Release Asset Upload | Upload screenshots to a GitHub release for PR body | Images persist in the PR body | `uploadReleaseAssets(...)` |
+| ![icon](https://api.iconify.design/mdi:cog.svg?color=%2300796b&width=16) | JSON Config | Declarative features and test cases in repository | Single source of truth for PR content | `config.features` |
+| ![icon](https://api.iconify.design/mdi:camera.svg?color=%23f57c00&width=16) | Playwright Screenshots | Render annotated HTML to PNG | Automated evidence capture | `bunx playwright screenshot ...` |
+| ![icon](https://api.iconify.design/mdi:shield-check.svg?color=%23ffa000&width=16) | TypeScript Strict | `strict: true` with NodeNext resolution | Type-safe PR generation | `bunx tsc --noEmit` |
+| ![icon](https://api.iconify.design/mdi:key.svg?color=%23d32f2f&width=16) | Environment Variables | Probot auth via `APP_ID`, `PRIVATE_KEY_PATH`, etc. | Secure GitHub App credentials | `.env.example` |
+
 
 ## Usage
 
-### CLI
+### Usage via CLI
 
 ```bash
-bunx tsx src/cli.ts --input pr-body.json --output pr-body.md
+bunx tsx src/cli.ts --help
 ```
 
-### Probot GitHub App
-
-1. Create a GitHub App in your account or organization.
-2. Set permissions: `Pull requests`, `Issues`, `Contents`.
-3. Subscribe to events: `Pull request`, `Issue comment`.
-4. Install the app on your repositories.
-5. Set environment variables from `.env.example`.
-
-### Devin skill
-
-Copy `SKILL.md` to your `.devin/skills/use-create-pr/` directory and invoke with `/use-create-pr`.
-
-## Configuration
-
-Create `.github/use-create-pr.json` in the target repository:
-
-```json
-{
-  "enabled": true,
-  "features": [
-    {
-      "name": "Docs migration",
-      "description": "Migrate docs to VitePress",
-      "status": "Ready",
-      "testCases": [
-        {
-          "summary": "Homepage loads",
-          "description": "See the docs homepage",
-          "previewUrl": "http://localhost:4173",
-          "imageName": "docs-homepage.png",
-          "imageAlt": "docs homepage"
-        }
-      ]
-    }
-  ],
-  "images": [
-    { "localPath": "docs/screenshots/homepage.png", "name": "docs-homepage.png" }
-  ]
-}
+```text
+┌──────────────────────────────────────────────────────────┐
+│ $ bunx tsx src/cli.ts --help                             │
+│                                                          │
+│ Usage: bunx tsx src/cli.ts --input pr-body.json          │
+│        [--output pr-body.md]                             │
+│                                                          │
+│ Options:                                                 │
+│   --input   Path to pr-body.json                         │
+│   --output  Output path (default: /dev/stdout)           │
+└──────────────────────────────────────────────────────────┘
 ```
+
+### Usage via Web
+
+<details>
+<summary>GitHub App webhook flow & PR body layout</summary>
+
+Install the GitHub App, subscribe to `Pull request` and `Issue comment` events, and add `.github/use-create-pr.json` to the repository. When a PR is opened, the bot uploads images, builds the body, and updates the PR. Comment `/use-create-pr --head <branch>` on an issue to create a PR.
+
+```text
+┌──────────────────────────────────────────────────────────┐
+│            Pull Request #42 — Docs migration             │
+│                                                          │
+│  ## Feature Summary                                      │
+│  | No. | Feature | Status | Evidence |                   │
+│  |---|---|---|---|                                       │
+│  | 1 | Docs | Ready | Test cases |                       │
+│                                                          │
+│  <details>                                               │
+│  <summary>Test 1: Homepage loads</summary>               │
+│  - Preview: [Open staging preview](...)                  │
+│  - Description: See the docs homepage                    │
+│  - Evidence:                                             │
+│  ![docs homepage](...)                                   │
+│  </details>                                              │
+└──────────────────────────────────────────────────────────┘
+```
+
+</details>
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, conventions, and validation workflows.
 
 ## License
 
-[MIT](LICENSE.md)
+MIT License — see [LICENSE.md](LICENSE.md)
